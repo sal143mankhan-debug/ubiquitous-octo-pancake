@@ -1,87 +1,1799 @@
-# 👋 Hi, I'm Sal
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BOQ Profit Control Dashboard | Workshop Bulandshahr</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Work+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-Welcome to my GitHub profile! I'm passionate about building innovative solutions and contributing to the developer community.
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #141925;
+            --bg-tertiary: #1e2433;
+            --bg-card: #242b3d;
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa5b8;
+            --text-muted: #6b7280;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-amber: #f59e0b;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --border-color: #2d3748;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+        }
 
----
+        body {
+            font-family: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #0d1220 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
 
-## 🙋 About Me
+        .dashboard-container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
 
-<!-- Add your introduction here -->
-- 🎯 I'm currently focused on **[Your current focus]**
-- 🌱 Always learning and exploring new technologies
-- 💡 I believe in writing clean, maintainable code
-- 🤝 Open to collaboration and mentoring
-- 📚 Lifelong learner with a passion for **[Your interests]**
+        /* Header */
+        .dashboard-header {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
 
----
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple), var(--accent-green));
+        }
 
-## 🛠️ Tech Stack
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
 
-**Languages:**
-- Python
-- JavaScript/TypeScript
-- Java
-- C++
+        .project-info h1 {
+            font-size: 1.875rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
 
-**Frontend:**
-- React
-- HTML/CSS
-- Responsive Design
+        .project-meta {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
 
-**Backend:**
-- Node.js
-- Express.js
-- REST APIs
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-**Tools & Platforms:**
-- Git & GitHub
-- Docker
-- AWS
-- VS Code
+        .meta-label {
+            color: var(--text-muted);
+        }
 
----
+        .status-badges {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
 
-## 🚀 Featured Projects
+        .badge {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.813rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-### 📊 [BOQ Profit Control Dashboard](https://github.com/sal143mankhan-debug/Dashboard-boq)
-A comprehensive profit control dashboard for construction projects with:
-- Real-time profit visualization
-- Risk heat mapping
-- Item-wise margin analysis
-- Scenario simulation
-- Professional dark UI
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
 
-**Tech:** HTML5, CSS3, Chart.js, JavaScript
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-amber);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
 
----
+        .badge-info {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
 
-## 📈 GitHub Stats
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s ease-in-out infinite;
+        }
 
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=sal143mankhan-debug&theme=dark&show_icons=true)
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(0.9); }
+        }
 
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=sal143mankhan-debug&theme=dark&layout=compact)
+        /* KPI Cards */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
 
----
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
 
-## 🌐 Connect With Me
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-blue);
+            box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+        }
 
-- 💼 [LinkedIn](https://linkedin.com/in/yourprofile)
-- 🐦 [Twitter](https://twitter.com/yourhandle)
-- 📧 [Email](mailto:your.email@example.com)
-- 🌐 [Portfolio](https://yourportfolio.com)
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--kpi-color, var(--accent-blue));
+        }
 
----
+        .kpi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
 
-## 💬 Let's Chat!
+        .kpi-title {
+            font-size: 0.813rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+        }
 
-I'm always interested in:
-- Collaborating on exciting projects
-- Contributing to open-source
-- Discussing technology and best practices
-- Mentoring aspiring developers
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-primary);
+            margin: 0.5rem 0;
+        }
 
-Feel free to reach out with opportunities or just to say hi! 🎉
+        .kpi-change {
+            font-size: 0.875rem;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
----
+        .kpi-change.positive {
+            color: var(--accent-green);
+        }
 
-**⭐ If you find any of my projects useful, please consider giving them a star! It means a lot 🙌**
+        .kpi-change.negative {
+            color: var(--accent-red);
+        }
+
+        .kpi-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 0.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+        }
+
+        .tab-button {
+            padding: 0.75rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        .tab-button.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Chart Container */
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        /* Heat Map */
+        .heatmap-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .heatmap-row {
+            display: grid;
+            grid-template-columns: 60px 1fr 120px 120px 100px;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .heatmap-header {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+        }
+
+        .heatmap-cell {
+            padding: 0.75rem;
+            background: var(--bg-tertiary);
+            border-radius: 6px;
+            font-size: 0.875rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .heatmap-cell.item-name {
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .heatmap-cell.risk-score {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .risk-critical {
+            background: rgba(220, 38, 38, 0.2);
+            border-color: var(--danger);
+            color: var(--accent-red);
+        }
+
+        .risk-high {
+            background: rgba(245, 158, 11, 0.2);
+            border-color: var(--warning);
+            color: var(--accent-amber);
+        }
+
+        .risk-medium {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .risk-low {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--success);
+            color: var(--accent-green);
+        }
+
+        /* BOQ Table */
+        .boq-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .boq-controls {
+            padding: 1.5rem;
+            background: var(--bg-tertiary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .filter-button {
+            padding: 0.75rem 1rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.813rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .filter-button:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--accent-blue);
+            color: var(--text-primary);
+        }
+
+        .filter-button.active {
+            background: var(--accent-blue);
+            color: white;
+            border-color: var(--accent-blue);
+        }
+
+        .boq-table-wrapper {
+            overflow-x: auto;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+
+        .boq-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.875rem;
+        }
+
+        .boq-table thead {
+            position: sticky;
+            top: 0;
+            background: var(--bg-tertiary);
+            z-index: 10;
+        }
+
+        .boq-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 2px solid var(--border-color);
+            white-space: nowrap;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .boq-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .boq-table tbody tr {
+            transition: background 0.2s ease;
+        }
+
+        .boq-table tbody tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        .item-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .item-description {
+            max-width: 400px;
+            font-size: 0.813rem;
+            line-height: 1.5;
+        }
+
+        .quantity-cell {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+        }
+
+        .amount-cell {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .margin-positive {
+            color: var(--accent-green);
+        }
+
+        .margin-negative {
+            color: var(--accent-red);
+        }
+
+        .risk-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        /* SOP Cards */
+        .sop-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .sop-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--sop-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .sop-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .sop-item-number {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .sop-risk-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .sop-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .sop-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .sop-section-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .sop-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sop-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .sop-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .sop-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid var(--accent-amber);
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-top: 1rem;
+        }
+
+        .sop-warning strong {
+            color: var(--accent-amber);
+        }
+
+        /* Scenario Simulator */
+        .scenario-container {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .scenario-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .scenario-input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .scenario-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .scenario-input {
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .scenario-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .scenario-results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .scenario-result-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .scenario-result-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .scenario-result-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-primary);
+        }
+
+        .scenario-button {
+            padding: 1rem 2rem;
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .scenario-button:hover {
+            background: #2563eb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 1rem;
+            }
+
+            .kpi-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chart-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .boq-controls {
+                flex-direction: column;
+            }
+
+            .filter-group {
+                width: 100%;
+                overflow-x: auto;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--accent-blue);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <div class="dashboard-header">
+            <div class="header-content">
+                <div class="project-info">
+                    <h1>🔥 BOQ Profit Control Dashboard</h1>
+                    <div class="project-meta">
+                        <div class="meta-item">
+                            <span class="meta-label">Project:</span>
+                            <span>Workshop Bulandshahr Construction</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Contractor:</span>
+                            <span>M/S S R INFRACONSTRUCTION PVT LTD</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-label">Tender:</span>
+                            <span>66/ECDC/GZB/2024-25</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="status-badges">
+                    <div class="badge badge-success">
+                        <span class="pulse-dot"></span>
+                        9.70% Discount Won
+                    </div>
+                    <div class="badge badge-warning">
+                        <span class="pulse-dot"></span>
+                        17 Critical Items
+                    </div>
+                    <div class="badge badge-info">
+                        179 Line Items
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <div class="kpi-card" style="--kpi-color: var(--accent-blue)">
+                <div class="kpi-header">
+                    <div class="kpi-title">Estimated Value</div>
+                </div>
+                <div class="kpi-value">₹1.45 Cr</div>
+                <div class="kpi-subtitle">Base BOQ Amount</div>
+            </div>
+            
+            <div class="kpi-card" style="--kpi-color: var(--accent-green)">
+                <div class="kpi-header">
+                    <div class="kpi-title">Quoted Value</div>
+                </div>
+                <div class="kpi-value">₹1.31 Cr</div>
+                <div class="kpi-change positive">
+                    ↓ ₹14.09L (9.70%)
+                </div>
+            </div>
+            
+            <div class="kpi-card" style="--kpi-color: var(--accent-purple)">
+                <div class="kpi-header">
+                    <div class="kpi-title">Target Margin</div>
+                </div>
+                <div class="kpi-value">12.5%</div>
+                <div class="kpi-change positive">
+                    ₹16.39L Projected Profit
+                </div>
+            </div>
+            
+            <div class="kpi-card" style="--kpi-color: var(--accent-amber)">
+                <div class="kpi-header">
+                    <div class="kpi-title">Risk Exposure</div>
+                </div>
+                <div class="kpi-value">₹23.8L</div>
+                <div class="kpi-subtitle">17 High-Risk Items</div>
+            </div>
+
+            <div class="kpi-card" style="--kpi-color: var(--accent-red)">
+                <div class="kpi-header">
+                    <div class="kpi-title">Critical Watchlist</div>
+                </div>
+                <div class="kpi-value">5 Items</div>
+                <div class="kpi-subtitle">Requiring Daily Monitoring</div>
+            </div>
+
+            <div class="kpi-card" style="--kpi-color: #06b6d4">
+                <div class="kpi-header">
+                    <div class="kpi-title">Best Case Margin</div>
+                </div>
+                <div class="kpi-value">18.2%</div>
+                <div class="kpi-change positive">
+                    +5.7% above target
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+            <button class="tab-button active" onclick="switchTab('overview')">📊 Overview</button>
+            <button class="tab-button" onclick="switchTab('heatmap')">🔥 Profit Heat Map</button>
+            <button class="tab-button" onclick="switchTab('boq')">📋 Full BOQ Analysis</button>
+            <button class="tab-button" onclick="switchTab('sop')">⚡ Execution SOPs</button>
+            <button class="tab-button" onclick="switchTab('scenario')">🎯 Scenario Simulator</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <h3 class="chart-title">Margin Distribution by Category</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="marginChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    <h3 class="chart-title">Risk Exposure Analysis</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="riskChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-grid">
+                <div class="chart-container">
+                    <h3 class="chart-title">Cost Breakdown (Top 10 Items)</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="costChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3 class="chart-title">Scenario Comparison</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="scenarioChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Heat Map Tab -->
+        <div id="heatmap" class="tab-content">
+            <div class="heatmap-container">
+                <h3 class="chart-title">🔥 BOQ Profit Heat Map - Item-wise Margin Sensitivity</h3>
+                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1.5rem;">
+                    Critical items sorted by risk score (combination of value, complexity, and margin pressure)
+                </p>
+                
+                <div class="heatmap-grid">
+                    <div class="heatmap-row">
+                        <div class="heatmap-header">Item #</div>
+                        <div class="heatmap-header">Description</div>
+                        <div class="heatmap-header">Amount (₹)</div>
+                        <div class="heatmap-header">Est. Margin</div>
+                        <div class="heatmap-header">Risk</div>
+                    </div>
+
+                    <!-- Item 47 - Aluminium Roofing -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">47</div>
+                        <div class="heatmap-cell item-name" title="Aluminium alloy roofing sheets (1100 Sqm)">Aluminium alloy roofing sheets (1100 Sqm)</div>
+                        <div class="heatmap-cell amount-cell">₹11,89,353</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+8.5%</div>
+                        <div class="heatmap-cell risk-score risk-critical">CRITICAL</div>
+                    </div>
+
+                    <!-- Item 24 - Brick Work -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">24</div>
+                        <div class="heatmap-cell item-name" title="Brick work superstructure (145 Cum)">Brick work superstructure (145 Cum)</div>
+                        <div class="heatmap-cell amount-cell">₹9,98,195</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+12.0%</div>
+                        <div class="heatmap-cell risk-score risk-high">HIGH</div>
+                    </div>
+
+                    <!-- Item 34 - Structural Steel -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">34</div>
+                        <div class="heatmap-cell item-name" title="Structural steel work (5000 Kg)">Structural steel work (5000 Kg)</div>
+                        <div class="heatmap-cell amount-cell">₹5,05,400</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+15.0%</div>
+                        <div class="heatmap-cell risk-score risk-critical">CRITICAL</div>
+                    </div>
+
+                    <!-- Item 122 - Diesel Fire Pump -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">122</div>
+                        <div class="heatmap-cell item-name" title="Diesel engine driven fire pump">Diesel engine driven fire pump</div>
+                        <div class="heatmap-cell amount-cell">₹4,80,828</div>
+                        <div class="heatmap-cell amount-cell margin-negative">-2.5%</div>
+                        <div class="heatmap-cell risk-score risk-critical">CRITICAL</div>
+                    </div>
+
+                    <!-- Item 23 - Brick Work Foundation -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">23</div>
+                        <div class="heatmap-cell item-name" title="Brick work foundation & plinth (88 Cum)">Brick work foundation & plinth (88 Cum)</div>
+                        <div class="heatmap-cell amount-cell">₹4,74,494</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+13.5%</div>
+                        <div class="heatmap-cell risk-score risk-high">HIGH</div>
+                    </div>
+
+                    <!-- Item 132 - MS Pipe 100mm -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">132</div>
+                        <div class="heatmap-cell item-name" title="MS Pipe 100mm dia (229 Metre)">MS Pipe 100mm dia (229 Metre)</div>
+                        <div class="heatmap-cell amount-cell">₹4,61,641</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+10.5%</div>
+                        <div class="heatmap-cell risk-score risk-high">HIGH</div>
+                    </div>
+
+                    <!-- Item 69 - Cement Concrete Pavement -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">69</div>
+                        <div class="heatmap-cell item-name" title="Cement concrete pavement (75 Cum)">Cement concrete pavement (75 Cum)</div>
+                        <div class="heatmap-cell amount-cell">₹4,53,248</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+11.0%</div>
+                        <div class="heatmap-cell risk-score risk-medium">MEDIUM</div>
+                    </div>
+
+                    <!-- Item 16 - Centering Shuttering Columns -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">16</div>
+                        <div class="heatmap-cell item-name" title="Centering shuttering columns (600 Sqm)">Centering shuttering columns (600 Sqm)</div>
+                        <div class="heatmap-cell amount-cell">₹4,36,044</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+14.0%</div>
+                        <div class="heatmap-cell risk-score risk-medium">MEDIUM</div>
+                    </div>
+
+                    <!-- Item 52 - Rough Cast Plaster -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">52</div>
+                        <div class="heatmap-cell item-name" title="Rough cast plaster (600 Sqm)">Rough cast plaster (600 Sqm)</div>
+                        <div class="heatmap-cell amount-cell">₹4,02,162</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+16.0%</div>
+                        <div class="heatmap-cell risk-score risk-medium">MEDIUM</div>
+                    </div>
+
+                    <!-- Item 41 - Concrete Hardener Flooring -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">41</div>
+                        <div class="heatmap-cell item-name" title="Concrete hardener flooring (500 Sqm)">Concrete hardener flooring (500 Sqm)</div>
+                        <div class="heatmap-cell amount-cell">₹3,99,225</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+18.0%</div>
+                        <div class="heatmap-cell risk-score risk-low">LOW</div>
+                    </div>
+
+                    <!-- Item 50 - 12mm Cement Plaster -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">50</div>
+                        <div class="heatmap-cell item-name" title="12mm cement plaster (1500 Sqm)">12mm cement plaster (1500 Sqm)</div>
+                        <div class="heatmap-cell amount-cell">₹3,89,700</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+17.5%</div>
+                        <div class="heatmap-cell risk-score risk-low">LOW</div>
+                    </div>
+
+                    <!-- Item 51 - 15mm Cement Plaster -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">51</div>
+                        <div class="heatmap-cell item-name" title="15mm cement plaster (1200 Sqm)">15mm cement plaster (1200 Sqm)</div>
+                        <div class="heatmap-cell amount-cell">₹3,73,536</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+17.0%</div>
+                        <div class="heatmap-cell risk-score risk-low">LOW</div>
+                    </div>
+
+                    <!-- Item 15 - Centering Shuttering Beams -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">15</div>
+                        <div class="heatmap-cell item-name" title="Centering shuttering beams (600 Sqm)">Centering shuttering beams (600 Sqm)</div>
+                        <div class="heatmap-cell amount-cell">₹3,34,032</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+15.5%</div>
+                        <div class="heatmap-cell risk-score risk-medium">MEDIUM</div>
+                    </div>
+
+                    <!-- Item 56 - White Cement Putty -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">56</div>
+                        <div class="heatmap-cell item-name" title="White cement putty (2800 Sqm)">White cement putty (2800 Sqm)</div>
+                        <div class="heatmap-cell amount-cell">₹3,30,316</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+20.0%</div>
+                        <div class="heatmap-cell risk-score risk-low">LOW</div>
+                    </div>
+
+                    <!-- Item 20 - Steel Reinforcement Above Plinth -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">20</div>
+                        <div class="heatmap-cell item-name" title="Steel reinforcement above plinth (4000 kg)">Steel reinforcement above plinth (4000 kg)</div>
+                        <div class="heatmap-cell amount-cell">₹3,26,120</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+9.0%</div>
+                        <div class="heatmap-cell risk-score risk-high">HIGH</div>
+                    </div>
+
+                    <!-- Item 14 - Centering Shuttering Floors -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">14</div>
+                        <div class="heatmap-cell item-name" title="Centering shuttering floors (450 Sqm)">Centering shuttering floors (450 Sqm)</div>
+                        <div class="heatmap-cell amount-cell">₹3,15,450</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+14.5%</div>
+                        <div class="heatmap-cell risk-score risk-medium">MEDIUM</div>
+                    </div>
+
+                    <!-- Item 10 - RCC Plinth Level -->
+                    <div class="heatmap-row">
+                        <div class="heatmap-cell item-number">10</div>
+                        <div class="heatmap-cell item-name" title="RCC work plinth level (45 Cum)">RCC work plinth level (45 Cum)</div>
+                        <div class="heatmap-cell amount-cell">₹3,07,737</div>
+                        <div class="heatmap-cell amount-cell margin-positive">+10.0%</div>
+                        <div class="heatmap-cell risk-score risk-high">HIGH</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Full BOQ Tab -->
+        <div id="boq" class="tab-content">
+            <div class="boq-container">
+                <div class="boq-controls">
+                    <div class="search-box">
+                        <input type="text" id="boqSearch" placeholder="Search items by description, code, or category..." onkeyup="filterBOQ()">
+                    </div>
+                    <div class="filter-group">
+                        <button class="filter-button active" onclick="filterByRisk('all')">All Items</button>
+                        <button class="filter-button" onclick="filterByRisk('critical')">Critical</button>
+                        <button class="filter-button" onclick="filterByRisk('high')">High Risk</button>
+                        <button class="filter-button" onclick="filterByRisk('medium')">Medium</button>
+                        <button class="filter-button" onclick="filterByRisk('low')">Low Risk</button>
+                    </div>
+                </div>
+                
+                <div class="boq-table-wrapper">
+                    <table class="boq-table" id="boqTable">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Risk</th>
+                                <th>Description</th>
+                                <th>Qty</th>
+                                <th>Unit</th>
+                                <th>Rate (₹)</th>
+                                <th>Amount (₹)</th>
+                                <th>Est. Margin</th>
+                                <th>Category</th>
+                            </tr>
+                        </thead>
+                        <tbody id="boqTableBody">
+                            <!-- Top 50 items - Populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOP Tab -->
+        <div id="sop" class="tab-content">
+            <div class="sop-grid">
+                <!-- SOP Card 1: Aluminium Roofing -->
+                <div class="sop-card" style="--sop-color: var(--danger)">
+                    <div class="sop-header">
+                        <div class="sop-item-number">ITEM #47</div>
+                        <div class="sop-risk-badge" style="background: rgba(220, 38, 38, 0.2); color: var(--accent-red);">CRITICAL RISK</div>
+                    </div>
+                    <h3 class="sop-title">Aluminium Alloy Roofing Sheets (₹11.89L)</h3>
+                    
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">🎯 Execution Strategy</h4>
+                        <ul class="sop-list">
+                            <li>Lock in material rate IMMEDIATELY with supplier - Aluminium prices volatile (±8-12% monthly fluctuation)</li>
+                            <li>Order 1100 sqm in two batches: 600 sqm upfront, 500 sqm 30 days before installation</li>
+                            <li>Verify thickness with micrometer on delivery (0.71mm ±0.05mm tolerance)</li>
+                            <li>Store in covered, dry area with max 10 sheets per stack to prevent warping</li>
+                            <li>Use only self-drilling SS screws M6x50mm with EPDM washers - no substitutions</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">💰 Billing Controls</h4>
+                        <ul class="sop-list">
+                            <li>Bill 80% after fixing 50% area (before final fixing to retain leverage)</li>
+                            <li>Document wastage photographically - claim up to 3% wastage for cutting/fitting</li>
+                            <li>Get signed Joint Measurement Book (JMB) entry BEFORE worker demobilization</li>
+                            <li>Submit bill within 3 days of milestone completion to avoid payment delays</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">⚠️ Risk Mitigation</h4>
+                        <ul class="sop-list">
+                            <li>Weather window: Only install in dry season (Nov-Feb). Monsoon work = 30% productivity loss</li>
+                            <li>Labour: Use specialized roofing crew only. Untrained workers cause 5-8% material damage</li>
+                            <li>Quality check: Test 5 random sheets for coating thickness (15-18 microns) before bulk installation</li>
+                            <li>Transportation: Use covered trucks only - rain/dust damage is NOT claimable</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-warning">
+                        <strong>⚡ CRITICAL ALERT:</strong> This is 9.1% of total contract value. A 5% cost overrun here = 50% of your total profit margin. Daily site inspection MANDATORY during this work. Appoint dedicated supervisor.
+                    </div>
+                </div>
+
+                <!-- SOP Card 2: Structural Steel -->
+                <div class="sop-card" style="--sop-color: var(--danger)">
+                    <div class="sop-header">
+                        <div class="sop-item-number">ITEM #34</div>
+                        <div class="sop-risk-badge" style="background: rgba(220, 38, 38, 0.2); color: var(--accent-red);">CRITICAL RISK</div>
+                    </div>
+                    <h3 class="sop-title">Structural Steel Work - Trusses & Framing (₹5.05L)</h3>
+                    
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">🎯 Execution Strategy</h4>
+                        <ul class="sop-list">
+                            <li>Send approved shop drawings to fabricator within 7 days of LOI - delays cost ₹5K/day</li>
+                            <li>Verify steel grade certification: TATA/SAIL/JSW - Fe 410/500 grade ONLY</li>
+                            <li>Witness fabrication at workshop - check welding quality and dimensions before dispatch</li>
+                            <li>Plan crane hiring for 2 days max - ₹1320/hour (Item #169). Over-scheduling = loss</li>
+                            <li>Prepare foundation anchor bolt layout BEFORE steel arrival to avoid site delay</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">💰 Billing Controls</h4>
+                        <ul class="sop-list">
+                            <li>Bill 30% on delivery to site (with weight certificate and test reports)</li>
+                            <li>Bill 50% on erection completion (with verticality/level test reports)</li>
+                            <li>Bill final 20% after painting and engineer's approval</li>
+                            <li>Weigh steel at certified weighbridge - maintain weight slips for audit</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">⚠️ Risk Mitigation</h4>
+                        <ul class="sop-list">
+                            <li>Steel price lock-in validity: 30 days max. Beyond that, renegotiate with supplier</li>
+                            <li>Welding: Use only certified welders (BIS/AWS). Bad welding = rejection = 100% rework cost</li>
+                            <li>Primer coat: Apply within 4 hours of steel erection to prevent rust (humidity > 70% = rapid oxidation)</li>
+                            <li>Safety: Mandatory scaffolding/safety nets. Accident stops work + ₹50K+ liability</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-warning">
+                        <strong>⚡ CRITICAL ALERT:</strong> Steel rate fluctuation risk is HIGH. Current rate ₹101.08/kg quoted in BOQ. Market rate today ₹95-115/kg depending on grade. Monitor weekly. If market drops >5%, renegotiate internally for cost savings.
+                    </div>
+                </div>
+
+                <!-- SOP Card 3: Diesel Fire Pump -->
+                <div class="sop-card" style="--sop-color: var(--danger)">
+                    <div class="sop-header">
+                        <div class="sop-item-number">ITEM #122</div>
+                        <div class="sop-risk-badge" style="background: rgba(220, 38, 38, 0.2); color: var(--accent-red);">CRITICAL - NEGATIVE MARGIN</div>
+                    </div>
+                    <h3 class="sop-title">Diesel Engine Driven Fire Pump (₹4.81L)</h3>
+                    
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">🎯 Execution Strategy</h4>
+                        <ul class="sop-list">
+                            <li>THIS ITEM IS UNDERPRICED - Est. cost ₹4.93L vs quoted ₹4.81L = ₹12K LOSS</li>
+                            <li>Negotiate with Kirloskar/Crompton for bulk discount (if buying Item #121 electric pump together)</li>
+                            <li>Verify spec: 2280 lpm @ 56m head, 1500 RPM, diesel engine with auto-start</li>
+                            <li>Check diesel tank capacity - min 200L for 6-hour runtime at full load</li>
+                            <li>Foundation work (anti-vibration pad) is INCLUDED - don't do extra civil work</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">💰 Billing Controls</h4>
+                        <ul class="sop-list">
+                            <li>Bill 80% on delivery to site with OEM certificate and warranty card</li>
+                            <li>Bill final 20% only after successful commissioning test (witnessed by fire dept if required)</li>
+                            <li>DO NOT accept "equivalent" make - spec says "relevant IS standard" which is vague, stick to reputed brand</li>
+                            <li>Exhaust insulation (50mm glass wool + Al cladding) is INCLUDED - ensure supplier provides</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">⚠️ Risk Mitigation</h4>
+                        <ul class="sop-list">
+                            <li>Lead time: 45-60 days for diesel fire pumps. Order IMMEDIATELY after contract signing</li>
+                            <li>This pump MUST pass Fire NOC test - keep spare budget ₹20K for any remedial work</li>
+                            <li>Auto-start mechanism testing: Do NOT skip. Manual intervention in fire = liability</li>
+                            <li>Residential silencer is MUST - noise complaints can halt project, ensure compliance</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-warning">
+                        <strong>⚡ MARGIN ALERT:</strong> This item shows NEGATIVE 2.5% margin. Strategies: (1) Bundle with Item #121 (electric pump) for negotiation, (2) Use alternate approved equivalent brand if 10%+ cheaper, (3) Claim any site-specific modifications as variation. Target: Break-even minimum.
+                    </div>
+                </div>
+
+                <!-- SOP Card 4: Brick Work Superstructure -->
+                <div class="sop-card" style="--sop-color: var(--warning)">
+                    <div class="sop-header">
+                        <div class="sop-item-number">ITEM #24</div>
+                        <div class="sop-risk-badge" style="background: rgba(245, 158, 11, 0.2); color: var(--accent-amber);">HIGH RISK</div>
+                    </div>
+                    <h3 class="sop-title">Brick Work Superstructure (₹9.98L)</h3>
+                    
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">🎯 Execution Strategy</h4>
+                        <ul class="sop-list">
+                            <li>Total quantity: 145 Cum = ~35,000 bricks (Class 7.5, FPS non-modular)</li>
+                            <li>Order bricks in 3 batches (15 days apart) to avoid storage issues and breakage</li>
+                            <li>Test 5 bricks from each batch for compressive strength (7.5 N/mm² min)</li>
+                            <li>Mortar 1:6 (cement:sand) - Use measuring box, NOT shovel counting</li>
+                            <li>Daily progress target: 3 Cum/mason/day with 2 helpers. Plan for 50 man-days</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">💰 Billing Controls</h4>
+                        <ul class="sop-list">
+                            <li>Bill in 3 running bills as per completion: 30% - 60% - 100%</li>
+                            <li>Measure work weekly in presence of JE - get JMB signatures immediately</li>
+                            <li>Cement consumption: 1 Cum brickwork = ~12 bags cement. Track daily to avoid pilferage</li>
+                            <li>Claim 5% extra for broken bricks and corners/junctions (standard wastage)</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">⚠️ Risk Mitigation</h4>
+                        <ul class="sop-list">
+                            <li>Curing: MANDATORY for 7 days minimum. Inadequate curing = strength loss = rejection</li>
+                            <li>Verticality check: Every 3 feet height. Deviation >12mm per 3m = rework</li>
+                            <li>Monsoon work: Avoid if possible. Wet masonry takes 2x time, quality issues</li>
+                            <li>Labour: Skilled masons only. Rate ₹800-1000/day. Helper ₹500-600/day</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-warning">
+                        <strong>⚡ QUALITY ALERT:</strong> This is visible work. Poor quality = expensive rework. Appoint one supervisor for every 10 masons. Check plumbness, level, and mortar joints daily. Estimated margin: 12% - achievable if execution is disciplined.
+                    </div>
+                </div>
+
+                <!-- SOP Card 5: Fire Fighting MS Pipes -->
+                <div class="sop-card" style="--sop-color: var(--warning)">
+                    <div class="sop-header">
+                        <div class="sop-item-number">ITEMS #125-133</div>
+                        <div class="sop-risk-badge" style="background: rgba(245, 158, 11, 0.2); color: var(--accent-amber);">HIGH RISK</div>
+                    </div>
+                    <h3 class="sop-title">Fire Fighting MS Pipes (Multiple Diameters - ₹11.5L Combined)</h3>
+                    
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">🎯 Execution Strategy</h4>
+                        <ul class="sop-list">
+                            <li>Pipe diameters: 25mm to 200mm, total ~700 running meters across all items</li>
+                            <li>Order all pipes together from one supplier for bulk discount (target 8-12% off)</li>
+                            <li>Verify IS 1239/3589 certification and wall thickness (critical for pressure rating)</li>
+                            <li>Pressure test MANDATORY: 1.5x working pressure for 30 minutes (no leaks/drops)</li>
+                            <li>Painting: 2 coats synthetic enamel (red for fire lines) - included in rate</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">💰 Billing Controls</h4>
+                        <ul class="sop-list">
+                            <li>Bill 40% on delivery with test certificates and mill reports</li>
+                            <li>Bill 40% after installation and welding (before pressure test)</li>
+                            <li>Bill final 20% after successful pressure test and painting</li>
+                            <li>Fittings cost: Elbows, tees, flanges are INCLUDED. Track separately to avoid underestimation</li>
+                            <li>Underground work (Item #125): Includes excavation, concrete blocks, refilling - ensure all covered</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-section">
+                        <h4 class="sop-section-title">⚠️ Risk Mitigation</h4>
+                        <ul class="sop-list">
+                            <li>Welding quality: Critical for fire safety. Only certified welders. Bad weld = system failure</li>
+                            <li>Coaltar/asphalt wrapping for underground pipes (IS 10221): Don't skip - corrosion protection</li>
+                            <li>Pipe supports/clamps: Required every 3m for horizontal runs. Budget separately if not clear</li>
+                            <li>Fire department inspection: Final approval needed. Keep 5% contingency for modifications</li>
+                            <li>Lead time: Large diameter pipes (150mm, 200mm) may have 20-30 day delivery. Order early</li>
+                        </ul>
+                    </div>
+
+                    <div class="sop-warning">
+                        <strong>⚡ COORDINATION ALERT:</strong> This work depends on: (1) Pumps installation, (2) Tank installation, (3) Building structure completion. Poor coordination = pipes installed wrong = rework = loss. Create detailed piping layout drawing BEFORE ordering materials.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scenario Simulator Tab -->
+        <div id="scenario" class="tab-content">
+            <div class="scenario-container">
+                <h3 class="chart-title">🎯 Profit Scenario Simulator</h3>
+                <p style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 2rem;">
+                    Adjust key variables to simulate best-case, worst-case, and realistic margin scenarios
+                </p>
+
+                <div class="scenario-controls">
+                    <div class="scenario-input-group">
+                        <label class="scenario-label">Material Cost Variance (%)</label>
+                        <input type="range" class="scenario-input" id="materialVar" min="-10" max="15" value="0" step="1" oninput="updateScenario()">
+                        <span id="materialVarValue" style="color: var(--text-primary); font-family: 'JetBrains Mono', monospace;">0%</span>
+                    </div>
+
+                    <div class="scenario-input-group">
+                        <label class="scenario-label">Labour Cost Variance (%)</label>
+                        <input type="range" class="scenario-input" id="labourVar" min="-5" max="20" value="0" step="1" oninput="updateScenario()">
+                        <span id="labourVarValue" style="color: var(--text-primary); font-family: 'JetBrains Mono', monospace;">0%</span>
+                    </div>
+
+                    <div class="scenario-input-group">
+                        <label class="scenario-label">Project Delay (days)</label>
+                        <input type="range" class="scenario-input" id="delayDays" min="0" max="90" value="0" step="5" oninput="updateScenario()">
+                        <span id="delayValue" style="color: var(--text-primary); font-family: 'JetBrains Mono', monospace;">0 days</span>
+                    </div>
+
+                    <div class="scenario-input-group">
+                        <label class="scenario-label">Wastage Factor (%)</label>
+                        <input type="range" class="scenario-input" id="wastage" min="2" max="12" value="5" step="0.5" oninput="updateScenario()">
+                        <span id="wastageValue" style="color: var(--text-primary); font-family: 'JetBrains Mono', monospace;">5%</span>
+                    </div>
+
+                    <div class="scenario-input-group">
+                        <label class="scenario-label">Billing Efficiency (%)</label>
+                        <input type="range" class="scenario-input" id="billingEff" min="70" max="100" value="95" step="5" oninput="updateScenario()">
+                        <span id="billingValue" style="color: var(--text-primary); font-family: 'JetBrains Mono', monospace;">95%</span>
+                    </div>
+
+                    <div class="scenario-input-group">
+                        <label class="scenario-label">Risk Event Probability (%)</label>
+                        <input type="range" class="scenario-input" id="riskProb" min="0" max="50" value="10" step="5" oninput="updateScenario()">
+                        <span id="riskValue" style="color: var(--text-primary); font-family: 'JetBrains Mono', monospace;">10%</span>
+                    </div>
+                </div>
+
+                <div class="scenario-results" id="scenarioResults">
+                    <!-- Results populated by JavaScript -->
+                </div>
+
+                <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color);">
+                    <h4 style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.05em;">Preset Scenarios</h4>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="scenario-button" onclick="loadPreset('best')" style="background: var(--accent-green);">Best Case</button>
+                        <button class="scenario-button" onclick="loadPreset('realistic')" style="background: var(--accent-blue);">Realistic</button>
+                        <button class="scenario-button" onclick="loadPreset('worst')" style="background: var(--accent-red);">Worst Case</button>
+                        <button class="scenario-button" onclick="loadPreset('reset')" style="background: var(--bg-secondary); border: 1px solid var(--border-color);">Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container" style="margin-top: 2rem;">
+                <h3 class="chart-title">Scenario Sensitivity Analysis</h3>
+                <div class="chart-wrapper" style="height: 400px;">
+                    <canvas id="sensitivityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data Structure
+        const boqData = [
+            // Top 50 High-Value Items
+            {item: 47, desc: "Aluminium alloy roofing sheets", qty: 1100, unit: "Sqm", rate: 1081.23, amount: 1189353, margin: 8.5, category: "Roofing", risk: "critical"},
+            {item: 24, desc: "Brick work superstructure", qty: 145, unit: "Cum", rate: 6884.10, amount: 998195, margin: 12.0, category: "Masonry", risk: "high"},
+            {item: 34, desc: "Structural steel work", qty: 5000, unit: "Kg", rate: 101.08, amount: 505400, margin: 15.0, category: "Steel", risk: "critical"},
+            {item: 122, desc: "Diesel engine driven fire pump", qty: 1, unit: "Set", rate: 480828.44, amount: 480828, margin: -2.5, category: "MEP", risk: "critical"},
+            {item: 23, desc: "Brick work foundation & plinth", qty: 88, unit: "Cum", rate: 5391.98, amount: 474494, margin: 13.5, category: "Masonry", risk: "high"},
+            {item: 132, desc: "MS Pipe 100mm dia", qty: 229, unit: "Metre", rate: 2015.90, amount: 461641, margin: 10.5, category: "Piping", risk: "high"},
+            {item: 69, desc: "Cement concrete pavement", qty: 75, unit: "Cum", rate: 6043.31, amount: 453248, margin: 11.0, category: "Civil", risk: "medium"},
+            {item: 16, desc: "Centering shuttering columns", qty: 600, unit: "Sqm", rate: 726.74, amount: 436044, margin: 14.0, category: "Formwork", risk: "medium"},
+            {item: 52, desc: "Rough cast plaster", qty: 600, unit: "Sqm", rate: 670.27, amount: 402162, margin: 16.0, category: "Finishing", risk: "medium"},
+            {item: 41, desc: "Concrete hardener flooring", qty: 500, unit: "Sqm", rate: 798.45, amount: 399225, margin: 18.0, category: "Flooring", risk: "low"},
+            {item: 50, desc: "12mm cement plaster", qty: 1500, unit: "Sqm", rate: 259.80, amount: 389700, margin: 17.5, category: "Finishing", risk: "low"},
+            {item: 51, desc: "15mm cement plaster", qty: 1200, unit: "Sqm", rate: 311.28, amount: 373536, margin: 17.0, category: "Finishing", risk: "low"},
+            {item: 15, desc: "Centering shuttering beams", qty: 600, unit: "Sqm", rate: 556.72, amount: 334032, margin: 15.5, category: "Formwork", risk: "medium"},
+            {item: 56, desc: "White cement putty", qty: 2800, unit: "Sqm", rate: 117.97, amount: 330316, margin: 20.0, category: "Finishing", risk: "low"},
+            {item: 20, desc: "Steel reinforcement above plinth", qty: 4000, unit: "kg", rate: 81.53, amount: 326120, margin: 9.0, category: "Steel", risk: "high"},
+            {item: 14, desc: "Centering shuttering floors", qty: 450, unit: "Sqm", rate: 701.00, amount: 315450, margin: 14.5, category: "Formwork", risk: "medium"},
+            {item: 10, desc: "RCC work plinth level", qty: 45, unit: "Cum", rate: 6838.59, amount: 307737, margin: 10.0, category: "Concrete", risk: "high"},
+            {item: 11, desc: "RCC work walls above plinth", qty: 35, unit: "Cum", rate: 8204.83, amount: 287169, margin: 10.5, category: "Concrete", risk: "high"},
+            {item: 133, desc: "MS Pipe 150mm dia", qty: 100, unit: "Metre", rate: 2819.89, amount: 281989, margin: 11.0, category: "Piping", risk: "high"},
+            {item: 54, desc: "Acrylic smooth exterior paint", qty: 2200, unit: "Sqm", rate: 121.41, amount: 267102, margin: 22.0, category: "Painting", risk: "low"},
+            {item: 121, desc: "Electric driven main fire pump", qty: 1, unit: "Set", rate: 261925.91, amount: 261926, margin: 5.0, category: "MEP", risk: "high"},
+            {item: 53, desc: "Acrylic distemper", qty: 1800, unit: "Sqm", rate: 140.35, amount: 252630, margin: 21.0, category: "Painting", risk: "low"},
+            {item: 13, desc: "Centering shuttering foundations", qty: 700, unit: "Sqm", rate: 296.47, amount: 207529, margin: 15.0, category: "Formwork", risk: "medium"},
+            {item: 49, desc: "Aluminium gutter", qty: 150, unit: "RM", rate: 1367.34, amount: 205101, margin: 12.0, category: "Roofing", risk: "medium"},
+            {item: 6, desc: "PCC 1:5:10", qty: 40, unit: "Cum", rate: 4928.06, amount: 197122, margin: 14.0, category: "Concrete", risk: "medium"},
+            {item: 124, desc: "Fire pump control panel", qty: 1, unit: "Set", rate: 193880.97, amount: 193881, margin: 8.0, category: "MEP", risk: "high"},
+            {item: 131, desc: "MS Pipe 80mm dia", qty: 125, unit: "Metre", rate: 1487.27, amount: 185909, margin: 11.5, category: "Piping", risk: "medium"},
+            {item: 75, desc: "RMC pavement M-25", qty: 25, unit: "Cum", rate: 7426.79, amount: 185670, margin: 9.0, category: "Concrete", risk: "medium"},
+            {item: 5, desc: "Sand filling in plinth", qty: 110, unit: "Cum", rate: 1605.56, amount: 176612, margin: 16.0, category: "Civil", risk: "low"},
+            {item: 19, desc: "Steel reinforcement plinth level", qty: 6914, unit: "kg", rate: 81.53, amount: 563698, margin: 9.5, category: "Steel", risk: "high"},
+            {item: 12, desc: "RCC work beams", qty: 15, unit: "Cum", rate: 8698.16, amount: 130472, margin: 11.0, category: "Concrete", risk: "high"},
+            {item: 43, desc: "Vitrified tiles 600x600", qty: 80, unit: "Sqm", rate: 1227.03, amount: 98162, margin: 18.0, category: "Flooring", risk: "low"},
+            {item: 81, desc: "Wiring light/fan points", qty: 75, unit: "Nos", rate: 1157.46, amount: 86810, margin: 20.0, category: "Electrical", risk: "low"},
+            {item: 82, desc: "Wiring circuit submain", qty: 250, unit: "RM", rate: 346.37, amount: 86593, margin: 19.0, category: "Electrical", risk: "low"},
+            {item: 86, desc: "Wiring power plug", qty: 250, unit: "RM", rate: 263.53, amount: 65883, margin: 19.5, category: "Electrical", risk: "low"},
+            {item: 125, desc: "MS Pipe 200mm underground", qty: 18, unit: "Metre", rate: 4387.63, amount: 78977, margin: 9.0, category: "Piping", risk: "high"},
+            {item: 155, desc: "PVC casing pipe 200mm", qty: 80, unit: "Metre", rate: 841.69, amount: 67335, margin: 15.0, category: "Borewell", risk: "medium"},
+            {item: 109, desc: "Turbo ventilators", qty: 8, unit: "Nos", rate: 8278.00, amount: 66224, margin: 12.0, category: "Ventilation", risk: "medium"},
+            {item: 123, desc: "Jockey pump pressurisation", qty: 1, unit: "Set", rate: 64784.00, amount: 64784, margin: 7.0, category: "MEP", risk: "high"},
+            {item: 7, desc: "PCC 1:1.5:3", qty: 10, unit: "Cum", rate: 6305.68, amount: 63057, margin: 13.0, category: "Concrete", risk: "medium"},
+            {item: 48, desc: "Aluminium ridges", qty: 75, unit: "RM", rate: 806.05, amount: 60454, margin: 13.0, category: "Roofing", risk: "medium"},
+            {item: 55, desc: "Synthetic enamel paint", qty: 350, unit: "Sqm", rate: 171.04, amount: 59864, margin: 23.0, category: "Painting", risk: "low"},
+            {item: 37, desc: "Steel grating/railings", qty: 450, unit: "kg", rate: 130.49, amount: 58721, margin: 16.0, category: "Steel", risk: "medium"},
+            {item: 166, desc: "Dewatering pumpset 5HP", qty: 1, unit: "Nos", rate: 57816.00, amount: 57816, margin: 10.0, category: "MEP", risk: "medium"},
+            {item: 105, desc: "Terrace waterproofing", qty: 45, unit: "Sqm", rate: 1273.56, amount: 57310, margin: 14.0, category: "Waterproofing", risk: "medium"},
+            {item: 162, desc: "Submersible pump 10HP", qty: 1, unit: "Each", rate: 54181.00, amount: 54181, margin: 11.0, category: "MEP", risk: "medium"},
+            {item: 127, desc: "MS Pipe 32mm", qty: 80, unit: "Metre", rate: 671.44, amount: 53715, margin: 12.0, category: "Piping", risk: "medium"},
+            {item: 3, desc: "Local earth filling", qty: 100, unit: "Cum", rate: 529.58, amount: 52958, margin: 17.0, category: "Earthwork", risk: "low"},
+            {item: 153, desc: "Bore well drilling 0-90m", qty: 90, unit: "Metre", rate: 535.06, amount: 48155, margin: 12.0, category: "Borewell", risk: "medium"},
+            {item: 62, desc: "Demolishing concrete", qty: 25, unit: "Sqm", rate: 1840.29, amount: 46007, margin: 15.0, category: "Demolition", risk: "low"}
+        ];
+
+        // Initialize Dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+            populateBOQTable();
+            updateScenario();
+        });
+
+        // Chart Initialization
+        function initializeCharts() {
+            // Margin Distribution Chart
+            const marginCtx = document.getElementById('marginChart').getContext('2d');
+            new Chart(marginCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Civil Works', 'MEP Systems', 'Steel & Metal', 'Finishing', 'Fire Fighting'],
+                    datasets: [{
+                        data: [35, 20, 18, 15, 12],
+                        backgroundColor: ['#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#9aa5b8', font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+
+            // Risk Exposure Chart
+            const riskCtx = document.getElementById('riskChart').getContext('2d');
+            new Chart(riskCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Critical', 'High', 'Medium', 'Low'],
+                    datasets: [{
+                        label: 'Exposure (₹ Lakhs)',
+                        data: [23.8, 32.5, 28.3, 46.4],
+                        backgroundColor: ['#ef4444', '#f59e0b', '#3b82f6', '#10b981']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            ticks: { color: '#9aa5b8' },
+                            grid: { color: '#2d3748' }
+                        },
+                        x: { 
+                            ticks: { color: '#9aa5b8' },
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Cost Breakdown Chart
+            const costCtx = document.getElementById('costChart').getContext('2d');
+            const top10Items = boqData.slice(0, 10);
+            new Chart(costCtx, {
+                type: 'bar',
+                data: {
+                    labels: top10Items.map(item => `#${item.item}`),
+                    datasets: [{
+                        label: 'Amount (₹ Lakhs)',
+                        data: top10Items.map(item => (item.amount / 100000).toFixed(2)),
+                        backgroundColor: '#3b82f6'
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { 
+                            ticks: { color: '#9aa5b8' },
+                            grid: { color: '#2d3748' }
+                        },
+                        y: { 
+                            ticks: { color: '#9aa5b8' },
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            // Scenario Comparison Chart
+            const scenarioCtx = document.getElementById('scenarioChart').getContext('2d');
+            new Chart(scenarioCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Best', 'Optimistic', 'Target', 'Realistic', 'Pessimistic', 'Worst'],
+                    datasets: [{
+                        label: 'Profit Margin %',
+                        data: [18.2, 15.8, 12.5, 10.2, 6.8, 3.5],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            beginAtZero: true,
+                            ticks: { color: '#9aa5b8' },
+                            grid: { color: '#2d3748' }
+                        },
+                        x: { 
+                            ticks: { color: '#9aa5b8' },
+                            grid: { display: false }
+                        }
+                    },
+                    plugins: {
+                        legend: { 
+                            labels: { color: '#9aa5b8' }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Populate BOQ Table
+        function populateBOQTable() {
+            const tbody = document.getElementById('boqTableBody');
+            tbody.innerHTML = '';
+
+            boqData.forEach(item => {
+                const row = document.createElement('tr');
+                row.className = `boq-row risk-${item.risk}`;
+                
+                const riskColors = {
+                    critical: '#ef4444',
+                    high: '#f59e0b',
+                    medium: '#3b82f6',
+                    low: '#10b981'
+                };
+
+                row.innerHTML = `
+                    <td class="item-number">${item.item}</td>
+                    <td><span class="risk-indicator" style="background: ${riskColors[item.risk]}"></span></td>
+                    <td class="item-description">${item.desc}</td>
+                    <td class="quantity-cell">${item.qty.toFixed(2)}</td>
+                    <td>${item.unit}</td>
+                    <td class="amount-cell">₹${item.rate.toFixed(2)}</td>
+                    <td class="amount-cell">₹${item.amount.toLocaleString('en-IN')}</td>
+                    <td class="amount-cell ${item.margin >= 0 ? 'margin-positive' : 'margin-negative'}">
+                        ${item.margin >= 0 ? '+' : ''}${item.margin.toFixed(1)}%
+                    </td>
+                    <td>${item.category}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Tab Switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Filter BOQ
+        function filterBOQ() {
+            const searchTerm = document.getElementById('boqSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('.boq-row');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        function filterByRisk(risk) {
+            const rows = document.querySelectorAll('.boq-row');
+            const buttons = document.querySelectorAll('.filter-button');
+            
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            rows.forEach(row => {
+                if (risk === 'all') {
+                    row.style.display = '';
+                } else {
+                    row.style.display = row.classList.contains(`risk-${risk}`) ? '' : 'none';
+                }
+            });
+        }
+
+        // Scenario Simulator
+        function updateScenario() {
+            const baseContract = 13115816; // Quoted value in rupees
+            const targetMargin = 0.125;
+            
+            // Get input values
+            const materialVar = parseFloat(document.getElementById('materialVar').value) / 100;
+            const labourVar = parseFloat(document.getElementById('labourVar').value) / 100;
+            const delayDays = parseFloat(document.getElementById('delayDays').value);
+            const wastage = parseFloat(document.getElementById('wastage').value) / 100;
+            const billingEff = parseFloat(document.getElementById('billingEff').value) / 100;
+            const riskProb = parseFloat(document.getElementById('riskProb').value) / 100;
+            
+            // Update display values
+            document.getElementById('materialVarValue').textContent = (materialVar * 100).toFixed(1) + '%';
+            document.getElementById('labourVarValue').textContent = (labourVar * 100).toFixed(1) + '%';
+            document.getElementById('delayValue').textContent = delayDays + ' days';
+            document.getElementById('wastageValue').textContent = (wastage * 100).toFixed(1) + '%';
+            document.getElementById('billingValue').textContent = (billingEff * 100).toFixed(0) + '%';
+            document.getElementById('riskValue').textContent = (riskProb * 100).toFixed(0) + '%';
+            
+            // Calculate impacts
+            const materialCost = baseContract * 0.45; // 45% of contract
+            const labourCost = baseContract * 0.30; // 30% of contract
+            const otherCosts = baseContract * 0.25; // 25% of contract
+            
+            const materialImpact = materialCost * materialVar;
+            const labourImpact = labourCost * labourVar;
+            const delayImpact = delayDays * 15000; // ₹15K per day overhead
+            const wastageImpact = materialCost * (wastage - 0.05); // Base wastage 5%
+            const billingImpact = baseContract * (1 - billingEff) * 0.20; // 20% profit impact
+            const riskImpact = 2380000 * riskProb; // Risk exposure
+            
+            const totalImpact = materialImpact + labourImpact + delayImpact + wastageImpact + billingImpact + riskImpact;
+            const baseProfitexpected = baseContract * targetMargin;
+            const adjustedProfit = baseProfit - totalImpact;
+            const adjustedMargin = (adjustedProfit / baseContract) * 100;
+            
+            // Display results
+            const resultsHTML = `
+                <div class="scenario-result-card">
+                    <div class="scenario-result-label">Adjusted Profit</div>
+                    <div class="scenario-result-value" style="color: ${adjustedProfit >= 0 ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                        ₹${(adjustedProfit / 100000).toFixed(2)}L
+                    </div>
+                </div>
+                <div class="scenario-result-card">
+                    <div class="scenario-result-label">Margin %</div>
+                    <div class="scenario-result-value" style="color: ${adjustedMargin >= 12.5 ? 'var(--accent-green)' : adjustedMargin >= 8 ? 'var(--accent-amber)' : 'var(--accent-red)'}">
+                        ${adjustedMargin.toFixed(2)}%
+                    </div>
+                </div>
+                <div class="scenario-result-card">
+                    <div class="scenario-result-label">Total Impact</div>
+                    <div class="scenario-result-value" style="color: var(--accent-red)">
+                        -₹${(totalImpact / 100000).toFixed(2)}L
+                    </div>
+                </div>
+                <div class="scenario-result-card">
+                    <div class="scenario-result-label">vs Target</div>
+                    <div class="scenario-result-value" style="color: ${adjustedProfit >= baseProfit ? 'var(--accent-green)' : 'var(--accent-red)'}">
+                        ${adjustedProfit >= baseProfit ? '+' : ''}${((adjustedProfit - baseProfit) / 100000).toFixed(2)}L
+                    </div>
+                </div>
+                <div class="scenario-result-card">
+                    <div class="scenario-result-label">Risk Rating</div>
+                    <div class="scenario-result-value" style="color: ${adjustedMargin >= 12 ? 'var(--accent-green)' : adjustedMargin >= 8 ? 'var(--accent-amber)' : 'var(--accent-red)'}; font-size: 1.25rem;">
+                        ${adjustedMargin >= 12 ? '✓ LOW' : adjustedMargin >= 8 ? '⚠ MEDIUM' : '✗ HIGH'}
+                    </div>
+                </div>
+                <div class="scenario-result-card">
+                    <div class="scenario-result-label">Final Contract Value</div>
+                    <div class="scenario-result-value">
+                        ₹${(baseContract / 10000000).toFixed(2)}Cr
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('scenarioResults').innerHTML = resultsHTML;
+        }
+
+        function loadPreset(type) {
+            const presets = {
+                best: { material: -5, labour: -3, delay: 0, wastage: 3, billing: 100, risk: 0 },
+                realistic: { material: 3, labour: 8, delay: 15, wastage: 5, billing: 95, risk: 10 },
+                worst: { material: 12, labour: 18, delay: 60, wastage: 10, billing: 80, risk: 35 },
+                reset: { material: 0, labour: 0, delay: 0, wastage: 5, billing: 95, risk: 10 }
+            };
+            
+            const preset = presets[type];
+            document.getElementById('materialVar').value = preset.material;
+            document.getElementById('labourVar').value = preset.labour;
+            document.getElementById('delayDays').value = preset.delay;
+            document.getElementById('wastage').value = preset.wastage;
+            document.getElementById('billingEff').value = preset.billing;
+            document.getElementById('riskProb').value = preset.risk;
+            
+            updateScenario();
+        }
+    </script>
+</body>
+</html>
