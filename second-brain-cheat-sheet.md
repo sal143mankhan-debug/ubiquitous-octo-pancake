@@ -10,6 +10,7 @@
 | Folder / file | What it's for | Who changes it |
 |---|---|---|
 | `raw/` | Drop box for links, articles and notes | You add. **Nobody edits.** |
+| `sessions/` | Takeaways saved from your chats | AI |
 | `pages/` | Clean, linked notes | AI |
 | `wiki/index.md` | Table of contents | AI |
 | `wiki/log.md` | Diary of what happened and when | AI |
@@ -47,12 +48,13 @@ Bonus: **"dream sequence"** runs the tidy-up right away.
 ## 💻 Setting it up on your computer
 1. Install **Claude Code** or the **Claude desktop app**.
 2. Make a folder, for example `my-brain/`, and open it in Claude.
-3. Paste the Second Brain prompt, with the fix above, then reply **"go"**.
+3. Paste everything in `second-brain-prompt.md`, read Claude's plan, then reply **"go"**.
 4. *(Recommended)* Turn on **git** (version history) so you can undo mistakes.
 5. *(Optional)* Open the folder in **Obsidian** to browse your notes and their links.
 6. *(Optional)* Install the **Obsidian Web Clipper** to save web pages straight into `raw/`.
 
-**Weekly tidy-up:** it runs only while your computer is on and Claude is open. If it's missed, just say **"dream sequence"**.
+**Weekly tidy-up:** it runs only while your computer is on and the desktop app is open. If one is missed, Claude notices next time and offers to run it.
+**Always open the same folder** (the one with `CLAUDE.md`) in both the terminal and the desktop app.
 
 ---
 
